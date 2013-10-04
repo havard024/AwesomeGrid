@@ -1,0 +1,34 @@
+<!doctype html>
+<head xmlns:ng="http://angularjs.org" id="ng-app" ng-app="App">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <!-- Stylesheets [BEGIN] -->
+    <link rel="stylesheet" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="lib/font-awesome-3.2.1/css/font-awesome.min.css" />
+    <!-- Stylesheets [END] -->
+
+    <!-- Scripts [BEGIN] -->
+    <script src="lib/angular-1.0.8/angular.min.js"></script>
+    <script src="lib/jquery-2.0.3/jquery.min.js"></script>
+    <script src="lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <!-- Scripts [END] -->
+
+    <script src="js/App.js"></script>
+
+    <!-- Controllers [BEGIN] -->
+    <script src="js/controllers/TableCtrl.js"></script>
+    <!-- Controllers [END] -->
+
+  </head>
+  <body>
+    <table class="table table-striped table-hover table-bordered table-condensed" ng-controller="TableCtrl">
+      <tr>
+	<th ng-repeat="col in columns">{{col.label}}</th>
+      </tr>
+      <tr ng-repeat="col in columns">
+	<td>{{col.value}}</td>
+      <tr>
+    </table>
+  </body>
+</html>    
