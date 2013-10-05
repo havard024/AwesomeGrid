@@ -116,53 +116,12 @@ angular.module('App', [])
 	}
 	
 	return factory;
-    })
-    .controller('TableCtrl', function($scope, awesomeGridConfig) {
-
-	$scope.rows = awesomeGridConfig.getRows();
-	$scope.columns = awesomeGridConfig.getColumns();
-	$scope.getValue = function(col, row) {
-	    return awesomeGridConfig.getValue(col, row);
-	}
-
-	var backup;
-
-	$scope.remove = function(id) {
-	    $scope.rows.splice(id, 1);
-	}
-
-	$scope.update = function(row) {
-	    backup = angular.copy(row);
-	}
-
-	$scope.save = function(row) {
-	    
-	}
-
-	$scope.undo = function(row) {
-	    for (var v in backup) {
-		row[v] = backup[v]
-	    }
-//	    row = angular.copy(backup);
-	}
-
-	$scope.reset = function(copy) {
-	    for (var v in copy) {
-		copy[v] = {}
-	    }
-	}
-
-	$scope.add = function(copy) {
-	    var row = angular.copy(copy);
-	    $scope.rows.unshift(row);
-	    $scope.reset(copy);
-	}
 }).directive('awesomeGridInline', function(awesomeGridConfig, $http, $templateCache) {
 	return {
 		restrict: 'C',
 		scope : false,
 		require : ['^awesomeGridConfig'],
-	templateUrl : 'templates/table.html',
+	templateUrl : 'templates/inlineTable.html',
 
 		controller : function($scope) {
 
@@ -206,11 +165,31 @@ angular.module('App', [])
 	}
 
 	}	
-}}).directive('awesomeGrid', function(awesomeGridConfig, $http, $templateCache) {
+}}).controller('awesomeGridFormCtrl', function($scope) {
+
+}).directive('awesomeGridNewForm', function(awesomeGridConfig) {
+	return {
+		restrict: 'C',
+		scope : 'false',
+		templateUrl : 'templates/form.html',
+		controller: function($scope) {
+			$scope.title = "New Form";
+		}
+	};		
+}).directive('awesomeGridEditForm', function(awesomeGridConfig) {
+	return {
+		restrict: 'C',
+		scope : 'false',
+		templateUrl : 'templates/form.html',
+		controller: function($scope) {
+			$scope.title = "Edit Form";
+		}
+	};		
+}).directive('awesomeGrid', function(awesomeGridConfig, $http, $templateCache) {
 	return {
 		restrict: 'C',
 		scope : false,
-		require : ['^awesomeGridConfig'],
+		require : ['^awesomeGridConfig', '^awesomeGridForm'],
 	templateUrl : 'templates/table.html',
 
 		controller : function($scope) {
@@ -219,6 +198,28 @@ angular.module('App', [])
 	$scope.columns = awesomeGridConfig.getColumns();
 	$scope.getValue = function(col, row) {
 	    return awesomeGridConfig.getValue(col, row);
+	}
+
+	var showEditForm = false;
+	var showNewForm = false;
+
+	$scope.formIsVisible = function(type) {
+		if (type === 'edit') {
+			return showEditForm;
+		} else if (type === 'new') {
+			return showNewForm;
+		} else {
+			throw "Unknown form type, expected edit/new got: " + type;
+		}
+	}
+
+	$scope.setEditFormVisible = function(value) {
+		showEditForm = value;
+		console.log(showEditForm);
+	}
+
+	$scope.setNewFormVisible = function(value) {
+		showNewForm = value;
 	}
 
 	var backup;

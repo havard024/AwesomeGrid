@@ -1,25 +1,19 @@
-
- <table class="table table-striped table-hover table-bordered table-condensed" ng-controller="TableCtrl">
+<div ng-controller="awesomeGridFormCtrl">
+	<div class="awesomeGridNewForm" ng-show="formIsVisible('new')" ng-animate="{show :   'animated bounceInRight', hide : 'animated bounceOutLeft'}"></div>
+	<div class="awesomeGridEditForm" ng-show="formIsVisible('edit');" ng-animate="{show :   'animated bounceInRight', hide : 'animated bounceOutLeft'}"></div>
+</div>
+<a class="btn btn-success btn-block" ng-click="setNewFormVisible('true')">Nytt Produkt</a>
+ <table class="table table-striped table-hover table-bordered table-condensed" ng-init="copy={}">
       <tr>
-	<th></th>
-	<th ng-repeat="col in columns">{{col.label}}</th>
+	<th ng-repeat="col in columns" ng-init="copy[col.id] = {}">{{col.label}}</th>
+      	<th>Oppdater</th>
+	</tr>
+      <tr>
       </tr>
-      <tr ng-init="copy={}">
-	<td>
-	  <a class="btn btn-danger" ng-click="reset(copy)">Reset</a>
-	  <a class="btn btn-success" ng-click="add(copy)">Create</a>
-	</td>
-	<td ng-repeat="col in columns" ng-init="copy[col.id]={}"><input class="input-small" type="text" ng-model="copy[col.id].value" /></td>
-      </tr>
-      <tr ng-repeat="row in rows" ng-init="edit='false';">
-	<td>
-	  <a class="btn btn-danger" ng-click="remove($index);">Delete</a>
-	  <a ng-hide="edit" class="btn btn-info" ng-click="edit='true'; update(row);">Edit</a>
-	  <a ng-show="edit" class="btn btn-success" ng-click="edit='false';">Save</a>
-	  <a ng-show="edit" class="btn btn-warning" ng-click="edit='false'; undo(row);">Undo</a>
+      <tr ng-repeat="row in rows">
 	<td ng-repeat="col in columns">
-	  <span ng-hide="edit">{{getValue(col, row)}}</span> 
-	  <input ng-show="edit" class="input-small" type="text" ng-model="row[col.id].value" />
+	  <span>{{getValue(col, row)}}</span> 
 	</td>
+	<td><a class="btn btn-success" ng-click="setEditFormVisible('true')">Oppdater</a></td>
       <tr>
     </table>
