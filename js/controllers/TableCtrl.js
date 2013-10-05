@@ -1,5 +1,6 @@
 var TableCtrl = function($scope) {
 
+	$scope.title = "hei";
     var columns = [{
 	label : 'Label 1',
 	value : 'Value 1'
@@ -24,3 +25,5 @@ var TableCtrl = function($scope) {
 }
 
 TableCtrl.$inject = ['$scope'];
+
+angular.module('App').controller('TableCtrl', TableCtrl);
