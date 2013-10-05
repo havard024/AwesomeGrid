@@ -1,0 +1,25 @@
+
+ <table class="table table-striped table-hover table-bordered table-condensed" ng-controller="TableCtrl">
+      <tr>
+	<th></th>
+	<th ng-repeat="col in columns">{{col.label}}</th>
+      </tr>
+      <tr ng-init="copy={}">
+	<td>
+	  <a class="btn btn-danger" ng-click="reset(copy)">Reset</a>
+	  <a class="btn btn-success" ng-click="add(copy)">Create</a>
+	</td>
+	<td ng-repeat="col in columns" ng-init="copy[col.id]={}"><input class="input-small" type="text" ng-model="copy[col.id].value" /></td>
+      </tr>
+      <tr ng-repeat="row in rows" ng-init="edit='false';">
+	<td>
+	  <a class="btn btn-danger" ng-click="remove($index);">Delete</a>
+	  <a ng-hide="edit" class="btn btn-info" ng-click="edit='true'; update(row);">Edit</a>
+	  <a ng-show="edit" class="btn btn-success" ng-click="edit='false';">Save</a>
+	  <a ng-show="edit" class="btn btn-warning" ng-click="edit='false'; undo(row);">Undo</a>
+	<td ng-repeat="col in columns">
+	  <span ng-hide="edit">{{getValue(col, row)}}</span> 
+	  <input ng-show="edit" class="input-small" type="text" ng-model="row[col.id].value" />
+	</td>
+      <tr>
+    </table>
