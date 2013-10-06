@@ -15,13 +15,24 @@ angular.module('App2', [])
 		var events = [];
 
 		function registerEvent(event) {
+	
+			event.timestamp = Date.now();
 			event.visible = true;
-			$timeout(function() {
-		//		events.pop();
-				event.visible = false;
-			}, 8000);
+			event.showDetails = false;
+		
+			function unregisterEvent() {
+					console.log(event, typeof event.showDetails);
+				if (event.showDetails && event.showDetails != 'false') {
+					$timeout(unregisterEvent, 5000);
+				} else {
+					event.visible = false;
+				}
+			}	
 
-			events.push(event);
+			
+			$timeout(unregisterEvent, 8000);
+
+			events.unshift(event);
 		}
 
 		function addSampleEvents() {
@@ -59,7 +70,7 @@ angular.module('App2', [])
 			$timeout(addRandomEvent, 6000);
 		}
 
-		addSampleEvents();
+//		addSampleEvents();
 		function registerUpdateEvent(event) {
 			event.msg.value = "Succsessfully updated item!";
 		}
@@ -72,6 +83,10 @@ angular.module('App2', [])
 			event.msg.value = "Successfully removed item!"
 		}
 
+		function registerUndoDeleteEvent(event) {
+			event.msg.value = "Restored removed item!"
+		}
+
 		var factory = {};
 		factory.events = events;
 		factory.registerEvent = function(event) {
@@ -82,6 +97,8 @@ angular.module('App2', [])
 				registerCreateEvent(event);
 			} else if (event.type === 'delete') {
 				registerDeleteEvent(event);
+			} else if (event.type === 'undoDelete') {
+				registerUndoDeleteEvent(event);
 			} else {
 				throw "Unknown event type. Expected update/create/delete, got: " + event.type;
 			}
@@ -449,7 +466,7 @@ angular.module('App2', [])
 			}
 		}
 	};		
-}).directive('awesomeGrid', function(awesomeGridConfig, awesomeGridFormFactory, $timeout) {
+}).directive('awesomeGrid', function(awesomeGridConfig, awesomeGridFormFactory, awesomeGridEventFactory, $timeout) {
 	return {
 		restrict: 'C',
 		scope : false,
@@ -490,6 +507,11 @@ angular.module('App2', [])
 
 			var deleted = [];
 			$scope.deleteRow = function(id) {
+				awesomeGridEventFactory.registerEvent({
+					type : 'delete',
+					msg : { type : 'warning' },
+					data : { value : angular.copy($scope.rows[id]) }
+				});
 				deleted.push($scope.rows[id]);
 				$scope.rows.splice(id, 1);
 			}
@@ -503,7 +525,13 @@ angular.module('App2', [])
 			}
 
 			$scope.undoDelete = function() {
-				$scope.rows.push(deleted.pop());
+				var row = deleted.pop();
+				awesomeGridEventFactory.registerEvent({
+					type : 'undoDelete', 
+					msg : { type : 'info' },
+					data : { value : angular.copy(row) }
+				})
+				$scope.rows.push(row);
 			}
 		}	
 	}
