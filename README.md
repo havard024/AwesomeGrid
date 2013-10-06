@@ -50,3 +50,27 @@ colums = [{
 
 The value of the id key should match one of the columns in a data object.  
 The label is the name of the column.  
+
+awesomeGrid
+===========
+Grid with forms for update/create, full crud. Also possible to undo deletes.
+Event list which publishes each update/create/delete/undoDelete.
+Animated grid, forms, events.
+
+configuration
+-------------
+
+Structure same as the previous configurations.
+
+Added new options to columns in the config object:
+columns = [{
+  id : ...,
+  label : ...,
+  read : {},
+  update : {},
+  create : {}
+}, {
+  ...
+}]
+
+Columns without read/create/update objects will be filtered out in the grid/updateForm/createForm.
