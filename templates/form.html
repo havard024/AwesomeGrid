@@ -1,4 +1,17 @@
 <h1>{{title}}</h1>
-<span ng-repeat="col in columns">
-	{{col.label}}: <input ng-model="copy[col.id].value" type="text" /> </br>
-</span>
+<form class="form-horizontal">
+	<div class="control-group" ng-repeat="col in columns">
+		<label class="control-label">{{col.label}}</label>
+		<div class="controls">	
+	 		<input ng-model="activeRow.value[col.id].value" type="text" /> 
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">
+	<a class="btn btn-danger" ng-click="closeForm()">Avbryt</a>
+		</label>
+		<div class="controls">
+	<a class="btn btn-success" ng-click="saveForm()">Lagre</a>
+		</div>
+	</div>
+</form>

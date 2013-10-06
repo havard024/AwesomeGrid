@@ -1,7 +1,7 @@
 angular.module('App', []) 
-    .factory('awesomeGridConfig', function() {
+    .factory('awesomeGridData', function() {
 
-    var config = {
+   var config = {
 	columns : [{
 	    id : "1",
 	    label : 'Label 1'
@@ -101,22 +101,33 @@ angular.module('App', [])
 	}
     }];
 
+	factory = {};
+	factory.config = config;
+	factory.rows = rows;
+
+	return factory;
+}).factory('awesomeGridConfig', ['awesomeGridData', function(data) {
+
 	var factory = {};
 
 	factory.getRows = function() {
-	    return rows;
+	    return data.rows;
 	}
 
 	factory.getColumns = function() {
-	    return config.columns;
+	    return data.config.columns;
 	}
 
 	factory.getValue = function(col, row) {
 	    return row[col.id].value;
 	}
+
+	factory.addRow = function(row) {
+		data.rows.unshift(angular.copy(row));
+	}
 	
 	return factory;
-}).directive('awesomeGridInline', function(awesomeGridConfig, $http, $templateCache) {
+}]).directive('awesomeGridInline', function(awesomeGridConfig, $http, $templateCache) {
 	return {
 		restrict: 'C',
 		scope : false,
@@ -165,95 +176,229 @@ angular.module('App', [])
 	}
 
 	}	
-}}).controller('awesomeGridFormCtrl', function($scope) {
+}}).factory('awesomeGridFormFactory', function(awesomeGridConfig) {
+	
+
+	var editFormVisible, newFormVisible;
+	var activeRow = {
+		value : {},
+		oldValue : {}
+	};
+	
+	editFormVisible = newFormVisible = false;
+
+	var factory = {};
+
+	function openEditForm(row) {
+
+		activeRow.oldValue = row;
+		activeRow.value = angular.copy(row);
+	//	for (var v in row) {
+	//		if (activeRow.value[v] === undefined) {
+//				activeRow.value[v] = row[v];
+//			}
+//			activeRow.value[v].value = row[v].value
+//		}
+		editFormVisible = true;
+	}
+
+	function openNewForm() {
+		newFormVisible = true;
+	}
+
+	function closeEditForm() {
+		editFormVisible = false;
+	}
+
+	function closeNewForm() {
+		newFormVisible = false;
+	}
+
+	factory.closeEditForm = function() {
+		closeEditForm();
+	}
+
+	factory.closeNewForm = function() {
+		closeNewForm();
+	}
+
+	factory.saveEditForm = function() {
+		for (var v in activeRow.value) {
+			activeRow.oldValue[v].value = activeRow.value[v].value; 
+			activeRow.value[v].value = undefined;
+		}
+		closeEditForm();
+	}
+
+	factory.saveNewForm = function() {
+		awesomeGridConfig.addRow(activeRow.value);
+		for (var v in activeRow.value) {
+			activeRow.value[v] = undefined;
+		}
+		closeNewForm();
+	}
+	
+	factory.getActiveRow = function() {
+		return activeRow;
+	}
+
+	factory.isVisible = function(type) {
+		if (type === 'new') {
+			return newFormVisible;
+		} else if (type === 'edit') {
+			return editFormVisible;
+		} else {
+			throw "Unknown type. Expected new/edit, got: " + type;
+		}
+	}
+
+	factory.showForm = function(type, row) {
+		if (type === 'new') {
+			openNewForm();
+		} else if (type === 'edit') {
+			openEditForm(row);
+		} else {
+			throw "Unknown type. Expected new/edit, got: " + type;
+		}
+	}
+
+	factory.closeForm = function(type) {
+		if (type === 'new') {
+			closeNewForm();	
+		} else if (type === 'edit') {
+			closeEditForm();
+		} else {
+			throw "Unknown type. Expected new/edit, got: " + type;
+		}
+	}
+
+	factory.getAnimationDelay = function(type) {
+		if (type === 'new' && editFormVisible || type === 'edit' && newFormVisible) {
+			 return "-webkit-animation-delay: 0.8s;" 
+		}
+	}
+
+	return factory;
+}).controller('awesomeGridFormCtrl', function($scope, awesomeGridFormFactory) {
+
+	function isEditForm(type) {
+		return type === 'edit';
+	}
+
+	function isNewForm(type) {
+		return type === 'new';
+	}	
+
+	$scope.activeRow = awesomeGridFormFactory.getActiveRow();
+
+	$scope.closeForm = function(type) {
+
+		if (isNewForm(type)) {
+			awesomeGridFormFactory.closeNewForm(type);
+		} else if (isEditForm(type)) {
+			awesomeGridFormFactory.closeEditForm(type);
+		} else {
+			throw "Unknown type. Expected new/edit, got: " + type;
+		}
+	}
+
+	$scope.formIsVisible = function(type) {
+		return awesomeGridFormFactory.isVisible(type);
+	}
+
+	$scope.getAnimationDelay = function(type) {
+		return awesomeGridFormFactory.getAnimationDelay(type);
+	}
+
+	$scope.saveForm = function(type) {
+
+		if (isNewForm(type)) {
+			awesomeGridFormFactory.saveNewForm();
+		} else if (isEditForm(type)) {
+			awesomeGridFormFactory.saveEditForm();
+		} else {
+			throw "Unknown type. Expected new/edit, got: " + type;
+		}
+	}
+
 
 }).directive('awesomeGridNewForm', function(awesomeGridConfig) {
 	return {
 		restrict: 'C',
-		scope : 'false',
+		scope : true,
 		templateUrl : 'templates/form.html',
 		controller: function($scope) {
+				
 			$scope.title = "New Form";
+			var type = 'new';
+			$scope.saveForm = function() {
+				$scope.$parent.saveForm(type);
+			}
+			$scope.closeForm = function() {
+				$scope.$parent.closeForm(type);
+			}
 		}
 	};		
 }).directive('awesomeGridEditForm', function(awesomeGridConfig) {
 	return {
 		restrict: 'C',
-		scope : 'false',
+		scope : true,
 		templateUrl : 'templates/form.html',
+		required : 'ngModel',
 		controller: function($scope) {
-			$scope.title = "Edit Form";
+			$scope.title =  'Edit Form';
+			var type = 'edit';
+
+			$scope.saveForm = function() {
+				$scope.$parent.saveForm(type);
+			}
+			$scope.closeForm = function() {
+				$scope.$parent.closeForm(type);
+			}
 		}
 	};		
-}).directive('awesomeGrid', function(awesomeGridConfig, $http, $templateCache) {
+}).directive('awesomeGridSimpleForm', function(awesomeGridConfig, awesomeGridFormFactory, $timeout) {
 	return {
 		restrict: 'C',
 		scope : false,
-		require : ['^awesomeGridConfig', '^awesomeGridForm'],
-	templateUrl : 'templates/table.html',
+		require : ['^awesomeGridConfig', '^awesomeGridForm', '^awesomeGridFormFactory'],
+		templateUrl : 'templates/table.html',
 
 		controller : function($scope) {
 
-	$scope.rows = awesomeGridConfig.getRows();
-	$scope.columns = awesomeGridConfig.getColumns();
-	$scope.getValue = function(col, row) {
-	    return awesomeGridConfig.getValue(col, row);
+			$scope.rows = awesomeGridConfig.getRows();
+			$scope.columns = awesomeGridConfig.getColumns();
+			$scope.getValue = function(col, row) {
+	    			return awesomeGridConfig.getValue(col, row);
+			}
+
+			$scope.activeRow = awesomeGridFormFactory.getActiveRow();
+
+			$scope.showEditForm = function(row) {
+		
+				var closeType = awesomeGridFormFactory.isVisible('new') ? 'new' : (awesomeGridFormFactory.isVisible('edit') ? 'edit' : undefined);		
+		
+				var delay = closeType ? 700 : 0;
+				console.log($scope.activeRow);
+				if (closeType) awesomeGridFormFactory.closeForm(closeType)
+			
+				$timeout(function() { awesomeGridFormFactory.showForm('edit', row); }, delay);
+			}
+
+			$scope.showNewForm = function() {
+				
+				var closeType = awesomeGridFormFactory.isVisible('new') ? 'new' : (awesomeGridFormFactory.isVisible('edit') ? 'edit' : undefined);		
+		
+				var delay = closeType ? 700 : 0;
+
+				if (closeType) awesomeGridFormFactory.closeForm(closeType)
+
+				$timeout(function() { awesomeGridFormFactory.showForm('new'); }, delay);
+			}
+
+			function closeForm(type) {
+				awesomeGridFormFactory.closeForm(type);
+			}
+		}	
 	}
-
-	var showEditForm = false;
-	var showNewForm = false;
-
-	$scope.formIsVisible = function(type) {
-		if (type === 'edit') {
-			return showEditForm;
-		} else if (type === 'new') {
-			return showNewForm;
-		} else {
-			throw "Unknown form type, expected edit/new got: " + type;
-		}
-	}
-
-	$scope.setEditFormVisible = function(value) {
-		showEditForm = value;
-		console.log(showEditForm);
-	}
-
-	$scope.setNewFormVisible = function(value) {
-		showNewForm = value;
-	}
-
-	var backup;
-
-	$scope.remove = function(id) {
-	    $scope.rows.splice(id, 1);
-	}
-
-	$scope.update = function(row) {
-	    backup = angular.copy(row);
-	}
-
-	$scope.save = function(row) {
-	    
-	}
-
-	$scope.undo = function(row) {
-	    for (var v in backup) {
-		row[v] = backup[v]
-	    }
-//	    row = angular.copy(backup);
-	}
-
-	$scope.reset = function(copy) {
-	    for (var v in copy) {
-		copy[v] = {}
-	    }
-	}
-
-	$scope.add = function(copy) {
-	    var row = angular.copy(copy);
-	    $scope.rows.unshift(row);
-	    $scope.reset(copy);
-	}
-
-	}	
-}});;
+});

@@ -1,11 +1,12 @@
-<div ng-controller="awesomeGridFormCtrl">
-	<div class="awesomeGridNewForm" ng-show="formIsVisible('new')" ng-animate="{show :   'animated bounceInRight', hide : 'animated bounceOutLeft'}"></div>
-	<div class="awesomeGridEditForm" ng-show="formIsVisible('edit');" ng-animate="{show :   'animated bounceInRight', hide : 'animated bounceOutLeft'}"></div>
+<div class="row" ng-controller="awesomeGridFormCtrl">
+	<div class="span6"></div>
+	<div class="awesomeGridNewForm span6" ng-show="formIsVisible('new')" ng-animate="{show :   'animated slideInRight', hide : 'animated slideOutLeft'}"></div>	
+	<div class="awesomeGridEditForm span6" ng-show="formIsVisible('edit');" ng-animate="{show :   'animated slideInRight', hide : 'animated slideOutLeft'}"></div>
 </div>
-<a class="btn btn-success btn-block" ng-click="setNewFormVisible('true')">Nytt Produkt</a>
- <table class="table table-striped table-hover table-bordered table-condensed" ng-init="copy={}">
+<a class="btn btn-success btn-block" ng-click="showNewForm()">Nytt Produkt</a>
+ <table class="table table-striped table-hover table-bordered table-condensed">
       <tr>
-	<th ng-repeat="col in columns" ng-init="copy[col.id] = {}">{{col.label}}</th>
+	<th ng-repeat="col in columns" ng-init="activeRow.value[col.id] = {'value' : 'hei'}">{{col.label}}</th>
       	<th>Oppdater</th>
 	</tr>
       <tr>
@@ -14,6 +15,6 @@
 	<td ng-repeat="col in columns">
 	  <span>{{getValue(col, row)}}</span> 
 	</td>
-	<td><a class="btn btn-success" ng-click="setEditFormVisible('true')">Oppdater</a></td>
+	<td><a class="btn btn-success" ng-click="showEditForm(row)">Oppdater</a></td>
       <tr>
     </table>

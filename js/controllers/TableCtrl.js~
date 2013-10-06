@@ -1,5 +1,0 @@
-var TableCtrl = function($scope) {
-    
-}
-
-TableCtrl.$inject = ['$scope'];
