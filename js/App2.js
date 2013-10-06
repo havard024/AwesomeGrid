@@ -1,25 +1,54 @@
 angular.module('App2', []) 
-    .factory('awesomeGridData', function() {
+    .filter('crudFilter', function() {
+	return function(input, type) {
+		var ret = [];
+		angular.forEach(input, function(field, key) {
+			if (field[type]) {
+				ret.push(field);
+			}
+		});
+		return ret;
+	}
+	
+}).factory('awesomeGridData', function() {
 
    var config = {
 	columns : [{
 	    id : "1",
-	    label : 'Label 1'
+	    label : 'Label 1',
+  		create : {},
+		read : {}, 
+		update : {}
 	}, {
 	    id : "2",
             label : 'Label 2',
+  		create : {},
+		read : {}, 
+		update : {}
 	}, {
 	    id : "3",
             label : 'Label 3',
+  		create : {},
+		read : {}, 
+		update : {}
 	}, {
 	    id : "4",
             label : 'Label 4',
+  		create : {},
+		read : {}, 
+		update : {}
 	}, {
 	    id : "5",
             label : 'Label 5',
+  		create : {},
+		read : {}, 
+		update : {}
 	}, {
 	    id : "6",
             label : 'Label 6',
+  		create : {},
+		read : {}, 
+		update : {}
 	}]
     };
 
@@ -271,10 +300,11 @@ angular.module('App2', [])
 	return {
 		restrict: 'C',
 		scope : true,
-		templateUrl : 'templates/form.html',
+		templateUrl : 'templates/form-with-templates.html',
 		controller: function($scope) {
 				
 			$scope.title = "New Form";
+			$scope.type = 'create';
 			var type = 'new';
 			$scope.saveForm = function() {
 				$scope.$parent.saveForm(type);
@@ -288,10 +318,11 @@ angular.module('App2', [])
 	return {
 		restrict: 'C',
 		scope : true,
-		templateUrl : 'templates/form.html',
+		templateUrl : 'templates/form-with-templates.html',
 		required : 'ngModel',
 		controller: function($scope) {
 			$scope.title =  'Edit Form';
+			$scope.type = 'update';
 			var type = 'edit';
 
 			$scope.saveForm = function() {
@@ -307,7 +338,7 @@ angular.module('App2', [])
 		restrict: 'C',
 		scope : false,
 		require : ['^awesomeGridConfig', '^awesomeGridForm', '^awesomeGridFormFactory'],
-		templateUrl : 'templates/table.html',
+		templateUrl : 'templates/table-with-templates.html',
 
 		controller : function($scope) {
 
@@ -341,8 +372,22 @@ angular.module('App2', [])
 				$timeout(function() { awesomeGridFormFactory.showForm('new'); }, delay);
 			}
 
+			var deleted = [];
+			$scope.deleteRow = function(id) {
+				deleted.push($scope.rows[id]);
+				$scope.rows.splice(id, 1);
+			}
+
 			function closeForm(type) {
 				awesomeGridFormFactory.closeForm(type);
+			}
+
+			$scope.hasDeletedRows = function() {
+				return deleted.length > 0;
+			}
+
+			$scope.undoDelete = function() {
+				$scope.rows.push(deleted.pop());
 			}
 		}	
 	}
