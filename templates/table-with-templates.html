@@ -1,0 +1,23 @@
+<div class="awesomeGridEvents"></div>
+<div class="row" ng-controller="awesomeGridFormCtrl">
+	<div class="span6"></div>
+	<div class="awesomeGridNewForm span6" ng-show="formIsVisible('new')" ng-animate="{show :   'animated slideInRight', hide : 'animated slideOutLeft'}"></div>	
+	<div class="awesomeGridEditForm span6" ng-show="formIsVisible('edit');" ng-animate="{show :   'animated slideInRight', hide : 'animated slideOutLeft'}"></div>
+</div>
+<a class="btn btn-success btn-block" ng-click="showNewForm()">Nytt Produkt</a>
+ <table class="table table-striped table-hover table-bordered table-condensed">
+      <tr>
+	<th ng-repeat="col in columns | crudFilter:'read'" ng-init="activeRow.value[col.id] = {'value' : 'hei'}">{{col.label}}</th>
+      	<th>Oppdater</th>
+	</tr>
+      <tr>
+      </tr>
+      <tr ng-repeat="row in rows" ng-animate="{enter: 'animated slideInLeft', leave : 'animated slideOutRight'}">
+	<td ng-repeat="col in columns | crudFilter:'read'">
+	  <span>{{getValue(col, row)}}</span> 
+	</td>
+	<td><a class="btn btn-success" ng-click="showEditForm(row)">Oppdater</a>
+	    <a class="btn btn-danger" ng-click="deleteRow($index)">Slett</a></td>
+      <tr>
+    </table>
+<a ng-show="hasDeletedRows()" class="btn btn-info btn-block" ng-click="undoDelete()">Undo Delete</a>

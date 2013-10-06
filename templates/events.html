@@ -1,0 +1,9 @@
+<div ng-repeat="e in getEvents() | filter:{visible : 'true'} track by $index" ng-animate="{ show : 'animated fadeIn', hide : 'animated fadeOut', enter : 'animated fadeIn', leave : 'animated fadeOut'}">
+	<div class="alert alert-{{e.msg.type}}" ng-init="showLink='false'">
+		<strong>{{e.msg.type}}!</strong> {{e.msg.value}}
+		<p><small>time: {{e.timestamp}}</small>  
+		<a ng-hide="showLink" class='alert-link' ng-click="showLink='true'">Show Details <i class="icon-arrow-down"></i></a>
+		<a ng-show="showLink" ng-click="showLink='false'">Hide Details <i class="icon-arrow-up"></i></a></p>
+		<div ng-show="showLink" ng-animate="{ show : 'animated bounceInRight', hide : 'animated slideOutRight' }"><p>{{e.data}}</p></div>
+	</div> 
+</div>	

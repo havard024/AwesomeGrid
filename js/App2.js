@@ -1,4 +1,96 @@
-angular.module('App2', []) 
+angular.module('App2', [])
+	.directive('awesomeGridEvents', function() {
+		return {
+			restrict: 'C',
+			templateUrl: 'templates/events.html',
+			controller: function($scope, awesomeGridEventFactory) {
+				$scope.getEvents = function() {
+					return awesomeGridEventFactory.events;
+				}	
+			}
+		}
+	})
+	.factory('awesomeGridEventFactory', function($timeout) {
+
+		var events = [];
+
+		function registerEvent(event) {
+			event.visible = true;
+			$timeout(function() {
+		//		events.pop();
+				event.visible = false;
+			}, 8000);
+
+			events.push(event);
+		}
+
+		function addSampleEvents() {
+
+			var sampleEvents = [];
+			sampleEvents.push({
+				timestamp : Date.now(),
+				msg : { type : 'success', value : 'Hurray, you did something good! *random sample message*' },
+				data : 'Some details about your good deed.'
+			});
+
+			sampleEvents.push({
+				timestamp : Date.now(),
+				msg : { type : 'error', value : 'Oh noes, something failed :( *random sample message*' },
+				data : 'No connection to the server?'
+			});
+
+			sampleEvents.push({
+				timestamp : Date.now(),
+				msg : { type : 'warning', value : 'You\'re about to do something that you might not want to do. *random sample message*' },	
+				data : 'Something bad might happen if you follow through.'
+			});
+
+			sampleEvents.push({
+				timestamp : Date.now(),
+				msg : { type : 'info', value : 'Information message just for you! *random sample message*' },
+				data : 'I don\'t think this kind of message is needed, too much spam.'
+			})
+
+			function addRandomEvent() {
+				registerEvent(angular.copy(sampleEvents[Math.floor(Math.random() * 4)]));
+				$timeout(addRandomEvent, Math.floor(Math.random() * 15 * 1000) + 3000);
+			}
+
+			$timeout(addRandomEvent, 6000);
+		}
+
+		addSampleEvents();
+		function registerUpdateEvent(event) {
+			event.msg.value = "Succsessfully updated item!";
+		}
+
+		function registerCreateEvent(event) {
+			event.msg.value = "Successfully created item!"
+		}
+
+		function registerDeleteEvent(event) {
+			event.msg.value = "Successfully removed item!"
+		}
+
+		var factory = {};
+		factory.events = events;
+		factory.registerEvent = function(event) {
+	
+			if (event.type === 'update') {
+				registerUpdateEvent(event);
+			} else if (event.type === 'create') {
+				registerCreateEvent(event);
+			} else if (event.type === 'delete') {
+				registerDeleteEvent(event);
+			} else {
+				throw "Unknown event type. Expected update/create/delete, got: " + event.type;
+			}
+
+			registerEvent(event);
+		}
+
+		return factory;
+	}) 
     .filter('crudFilter', function() {
 	return function(input, type) {
 		var ret = [];
@@ -156,7 +248,7 @@ angular.module('App2', [])
 	}
 	
 	return factory;
-}]).factory('awesomeGridFormFactory', function(awesomeGridConfig) {
+}]).factory('awesomeGridFormFactory', function(awesomeGridConfig, awesomeGridEventFactory) {
 	
 
 	var editFormVisible, newFormVisible;
@@ -197,6 +289,18 @@ angular.module('App2', [])
 	}
 
 	factory.saveEditForm = function() {
+
+		awesomeGridEventFactory.registerEvent({ 
+			type : 'update',
+			msg : { 
+				type : 'success'
+				},
+			data : {
+				from : angular.copy(activeRow.oldValue),
+				to   : angular.cop(yactiveRow.value)
+			}
+		});
+
 		for (var v in activeRow.value) {
 			activeRow.oldValue[v].value = activeRow.value[v].value; 
 			activeRow.value[v].value = undefined;
@@ -205,9 +309,21 @@ angular.module('App2', [])
 	}
 
 	factory.saveNewForm = function() {
-		awesomeGridConfig.addRow(activeRow.value);
+
+		console.log(activeRow);
+		awesomeGridEventFactory.registerEvent({ 
+			type : 'create',
+			msg : {
+				type : 'success'
+				},
+			data : {
+				value : angular.copy(activeRow.value)
+			}
+		 });
+
+		awesomeGridConfig.addRow(angular.copy(activeRow.value));
 		for (var v in activeRow.value) {
-			activeRow.value[v] = undefined;
+			activeRow.value[v].value = undefined;
 		}
 		closeNewForm();
 	}
