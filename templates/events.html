@@ -1,0 +1,11 @@
+<ul class="inline">
+<li ng-repeat="e in getEvents() | filter:{visible : 'true'} | orderBy:'timestamp':'true' track by $index" ng-animate="{ add: 'animated fadeIn', enter : 'animated fadeIn', leave : 'animated hinge', remove : 'animated fadeOut', move : 'animated slideInLeft'}">
+	<div class="alert alert-{{e.msg.type}}" style="width: 400px;">
+		<h4>{{e.msg.type}}!</h4> {{e.msg.value}}
+		<p><small>time: {{e.timestamp | date:'hh:mm:ss'}}</small>  
+		<a ng-hide="e.showDetails" class='alert-link' ng-click="e.showDetails='true'">Show Details <i class="icon-arrow-down"></i></a>
+		<a ng-show="e.showDetails" ng-click="e.showDetails='false'">Hide Details <i class="icon-arrow-up"></i></a></p>
+		<div ng-show="e.showDetails" ng-animate="{ show : 'animated bounceInRight', hide : 'animated slideOutRight' }"><p>{{e.data}}</p></div>
+	</div> 
+</li>	
+</ul>
