@@ -113,6 +113,7 @@ angular.module('awesomeGridSimple.factories', [])
 	var factory = {};
 
 	factory.getRows = function() {
+		console.log('simple gird')
 	    return data.rows;
 	}
 

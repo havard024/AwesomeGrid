@@ -115,7 +115,7 @@ angular.module('awesomeGrid.factories', [])
 		}
 
 		return factory;
-}).factory('awesomeGridData', function() {
+}).factory('awesomeGridData', function($timeout) {
 
    var config = {
 	columns : [{
@@ -157,7 +157,8 @@ angular.module('awesomeGrid.factories', [])
 	}]
     };
 
-    var rows = [{
+	var rows = [];
+	$timeout(function() {    var rowsies = [{
 	"1" : {
 	    value : "Value 1"
 	}, 
@@ -234,6 +235,12 @@ angular.module('awesomeGrid.factories', [])
 	    value : "Value 24"
 	}
     }];
+
+	for (var i = 0; i < rowsies.length; ++i) { 
+		rows.push(rowsies[i]) 
+	}
+}, 2000)
+
 
 	factory = {};
 	factory.config = config;
