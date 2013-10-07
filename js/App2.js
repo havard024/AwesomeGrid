@@ -1,4 +1,7 @@
 angular.module('App2', [])
+	.factory('awesomeGridServerFactory', function() {
+
+})
 	.directive('awesomeGridEvents', function() {
 		return {
 			restrict: 'C',
@@ -307,14 +310,19 @@ angular.module('App2', [])
 
 	factory.saveEditForm = function() {
 
+		var newRow, oldRow;
+
+		newRow = angular.copy(activeRow.value);
+		oldRow = angular.copy(activeRow.oldValue);
+
 		awesomeGridEventFactory.registerEvent({ 
 			type : 'update',
 			msg : { 
 				type : 'success'
 				},
 			data : {
-				from : angular.copy(activeRow.oldValue),
-				to   : angular.cop(yactiveRow.value)
+				from : oldRow,
+				to   : newRow
 			}
 		});
 
