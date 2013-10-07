@@ -10,7 +10,7 @@ Directives
 * awesomeGridInline
 * awesomeGridSimpleForm
 * awesomeGrid
-* 
+
 awesomeGridInline
 =================
 Grid with inline update/create and full crud.
