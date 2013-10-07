@@ -3,11 +3,14 @@ AwesomeGrid
 
 Awesome crud grid with angularjs!
 
+Checkout the current demo page: http://havard024.github.io/AwesomeGrid
+
 Directives
 ==========
 * awesomeGridInline
 * awesomeGridSimpleForm
-
+* awesomeGrid
+* 
 awesomeGridInline
 =================
 Grid with inline update/create and full crud.
@@ -62,15 +65,15 @@ configuration
 
 Structure same as the previous configurations.
 
-Added new options to columns in the config object:
-columns = [{
-  id : ...,
-  label : ...,
-  read : {},
-  update : {},
-  create : {}
-}, {
-  ...
-}]
+Added new options to columns in the config object:  
+columns = [{  
+  id : ...,  
+  label : ...,  
+  read : {},  
+  update : {},  
+  create : {}  
+}, {  
+  ...  
+}]  
 
 Columns without read/create/update objects will be filtered out in the grid/updateForm/createForm.
