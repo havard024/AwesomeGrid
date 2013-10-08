@@ -301,7 +301,7 @@ angular.module('awesomeGrid.factories', [])
 		var deferred = $q.defer();
 
 		$timeout(function() {
-			if (random(0,1( % 2 === 0) {
+			if (random(0,1) % 2 === 0) {
 				deferred.reject();
 				evtConfig.status = 'error';
 			} else {
