@@ -413,7 +413,12 @@ angular.module('awesomeGrid.directives', [])
 
 			$scope.rows = data.get();
 			$scope.columns = data.getColumns();
-			$scope.emptyRow = {};	
+			$scope.emptyRow = {};
+
+			angular.forEach($scope.columns, function(field, key) {
+				$scope.emptyRow[field.id] = {};
+			});	
+
 			$scope.activeRow = {
 				copy : {},
 				curr : {}
@@ -428,7 +433,6 @@ angular.module('awesomeGrid.directives', [])
 			}
 
 			function getRowId(row) {
-				console.log(row.id || row.lid);
 				return row.id || row.lid;
 			}
 
@@ -444,7 +448,6 @@ angular.module('awesomeGrid.directives', [])
 			}
 
 			$scope.saveForm = function() {
-				console.log('save form', $scope.activeRow)
 				var copy = $scope.activeRow.copy;
 				var curr = $scope.activeRow.curr;
 

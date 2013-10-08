@@ -12,7 +12,7 @@
 <table class="table table-striped table-hover table-bordered table-condensed">
 
 	<tr>
-		<th ng-repeat="col in columns | filter:readFilter" ng-init="emptyRow[col.id] = {}" ng-animate="{enter : 'animated fadeIn', leave : 'animated fadeOut'}">
+		<th ng-repeat="col in columns | filter:readFilter"  ng-animate="{enter : 'animated fadeIn', leave : 'animated fadeOut'}">
 			{{getLabel(col)}}
 		</th>
 	</tr>
