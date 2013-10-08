@@ -292,10 +292,10 @@ angular.module('awesomeGrid.factories', [])
 	}
 
 	function post(evtConfig) {
-		var url = 'data.json';
+		var url = '';
 	
 		if (random(0,1) % 2 === 0) {
-			url = 'err.json'; 
+			url = 'er'; 
 		}
 
 		var deferred = $q.defer();
