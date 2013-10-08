@@ -292,7 +292,7 @@ angular.module('awesomeGrid.factories', [])
 	}
 
 	function post(evtConfig) {
-		var url = '';
+		var url = 'google.com';
 	
 		if (random(0,1) % 2 === 0) {
 			url = 'er'; 
