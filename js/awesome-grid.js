@@ -301,6 +301,19 @@ angular.module('awesomeGrid.factories', [])
 		var deferred = $q.defer();
 
 		$timeout(function() {
+			if (random(0,1( % 2 === 0) {
+				deferred.reject();
+				evtConfig.status = 'error';
+			} else {
+				deferred.resolve();
+				evtConfig.status = 'success';
+			}
+
+			event.trigger(evtConfig);
+		}, 300);
+
+	/*
+		$timeout(function() {
 			$http.post(url).error(function() {
 				deferred.reject();
 				evtConfig.status = 'error';
@@ -311,7 +324,8 @@ angular.module('awesomeGrid.factories', [])
 				event.trigger(evtConfig);
 			});
 		}, 300);
-		return deferred.promise;
+		*/	
+	return deferred.promise;
 	}
 
 
