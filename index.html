@@ -18,17 +18,10 @@
 
 
 <script src="lib/angular-1.1.5/angular.min.js"></script>
-<!-- <script src="http://code.angularjs.org/1.1.5/angular.js"></script>
- -->	
-
 	<script src="js/awesome-grid.js"></script>
-<script src="js/awesome-grid-simple.js"></script>
 
 
-
-
-
-    <script src="js/App2.js"></script>
+    <script src="js/App.js"></script>
 
     <!-- Controllers [BEGIN] -->
     <!-- Controllers [END] -->
@@ -36,27 +29,9 @@
 
   </head>
 <body>
-
-
-<div ng-app="App2">
-<div>
-	Show cool box: <input type="checkbox" ng-model="show">
-	<div ng-show="show" style="width: 50px; height: 50px; background: red;" ng-animate="{show :   'animated bounceInRight', hide : 'animated bounceOutLeft'}"></div>
-	<h1>Inline table</h1> 
-	<div class="awesomeGridSimpleInline"></div>
-	<h1>Table with simple forms</h1>  
-	<div class="awesomeGridSimpleForm"></div>
-</div>
-<div>
-<h1>Awesome grid</h1>
-<div class="awesomeGrid"></div>
-</div>
-</div>
-
-<!--
-<div ng-app="App2">
-	<h1>Table with more awesomeness</h1>
-	<a href="index2.html" class="btn btn-info btn-block">Click here for the most awesome table</a>
-</div>-->
+	<div ng-app="App">
+		<h1>Awesome grid</h1>
+		<div class="agAwesomeGrid"></div>
+	</div>
 </body>
 </html>    
