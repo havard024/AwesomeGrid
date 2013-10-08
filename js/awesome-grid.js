@@ -43,11 +43,78 @@ angular.module('awesomeGrid.factories', [])
 		create : {}
 	}];
 
+	var rows = [{
+		"id" : {
+			"value" : "row1"
+		},
+		"column1" : {
+			"value" : "value 1"
+		},
+		"column2" : {
+			"value" : "value 2"
+		},
+		"column3" : {
+			"value" : "value 3"
+		},
+		"column4" : {
+			"value" : "Only readable 1"
+		},
+		"column5" : {
+			"value" : "Only updateable 1"
+		}, 
+		"column6" : {
+			"value" : "Only creatable 1"
+		}
+	}, {
+		"id" : {
+			"value" : "row1"
+		},
+		"column1" : {
+			"value" : "value 4"
+		},
+		"column2" : {
+			"value" : "value 5"
+		},
+		"column3" : {
+			"value" : "value 6"
+		},
+		"column4" : {
+			"value" : "Only readable 2"
+		},
+		"column5" : {
+			"value" : "Only updateable 2"
+		}, 
+		"column6" : {
+			"value" : "Only creatable 2"
+		}
+	}, {
+		"id" : {
+			"value" : "row1"
+		},
+		"column1" : {
+			"value" : "value 7"
+		},
+		"column2" : {
+			"value" : "value 8"
+		},
+		"column3" : {
+			"value" : "value 9"
+		},
+		"column4" : {
+			"value" : "Only readable 3"
+		},
+		"column5" : {
+			"value" : "Only updateable 3"
+		}, 
+		"column6" : {
+			"value" : "Only creatable 3"
+		}
+	}] 
 	factory = {
 		columns : columns,
 		data : {
-				//local : rows
-				remote : "data.json"
+				local : rows
+				//remote : "data.json"
 		}
 	};
 
