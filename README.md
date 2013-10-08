@@ -1,79 +1,112 @@
 AwesomeGrid
 ===========
 
-Awesome crud grid with angularjs!
+Awesome grid is a fully configurable crud app.
+
+Features
+---------
+
+* Load remote or local data
+* Choose which columns to display in create, read and update.
+* Mark a column in the create/update as searchable.
+* Full feedback of all crud events on success or failure.
+
+Future Features
+---------------
+* Specify urls for delete/create/update to update the database.
+* Awesome animations for filtering, events and forms.
+* Different form fields: select, checkbox.
+* Use a html template to style form fields.
+* Form validation.
 
 Checkout the current demo page: http://havard024.github.io/AwesomeGrid
 
-Directives
-==========
-* awesomeGridInline
-* awesomeGridSimpleForm
-* awesomeGrid
-
-awesomeGridInline
-=================
-Grid with inline update/create and full crud.
-
-awesomeGridSimpleForm
-=====================
-Grid with forms for update/create, missing delete.
-
 Configuration
 =============
-The following configuration description might be incomplete.  
 
-Your data an awesomeGrid configurations needs to be placed in a factory called 'awesomeGridData'.  
+Define a factory with the following name in your application:  
 
-The factory should return something like this:  
+angular.module('YourApp', []).factory('configFactory', function() { ... });
+
+The factory should look like this:  
+
 factory = {  
-  config : { colums : ... },  
-  rows : [...]  
+  columns : {...} ,  
+  data    : {  
+      local : [...],
+      remote : "url"
 }  
 
-The row list is your data objects. Each object should be in the following format:  
-rows = [{  
-  "column1" : { value : "value1" },  
-  "column2" : { value : "value2" }  
+For local/remote, only one is needed.  
+
+The columns object is where you configure your data columns:  
+
+config = [{  
+  id     : "...",  
+  label  : "...",  
+  search : true/false,  
+  create : { ... },  
+  read   : { ... },  
+  update : { ... }  
 }, {  
-  "column1" : { value : "value3" },  
-  "column2" : { value : "value4" }  
+    ... same as above ...  
+}];  
+
+id     - Id of a column in your data. For the configuration of this column to take effect, the id must match a column id in the data rows.  
+label  - Column header.
+search - Mark as searchable in both update/create (If you only want to make a column searchable in update or create, you can do that in the create/update object, more info below).
+create - Mark as visible in the create form.
+read   - Mark as visible in the table.
+update - Mark as visible in the update form.
+
+read has no configuration options at the moment.
+
+create and update has the following configuration options:  
+create/update : {  
+  search : true/false  
+}
+
+search - Marks a column searchable in either create or update form (If you want the column to be seachable in both forms, do that with the previous search option)
+
+The rows of the supplied data should match the following structure:
+
+Each row has a multiple key/value pairs.
+A key is a column id, for that column to be visible, the column id must match a column id in the columns configuration object described above. (Remember to also add a read/update/create object in the some columns configuration object)
+The value should also be a key value pair:  
+{  
+  "value" : "VALUE OF ROW"  
+}  
+
+
+[{   
+  
+  // ROW 1  
+    
+  "column 1" : {  
+    value : "..."  
+  },  
+  
+  "column 2" : {  
+    ...  
+  },  
+  
+  // Rest of columns ...    
+}, {  
+  
+  // ROW 2  
+    ...  
 }]  
 
-The config object should have an object called columns with the following:  
 
-colums = [{  
-    id : "column1",  
-    label : "columnHeader1"  
-  }, {  
-    id : "column2",  
-    label : "columnHeader2"  
-  }  
-]  
 
-The value of the id key should match one of the columns in a data object.  
-The label is the name of the column.  
 
-awesomeGrid
-===========
-Grid with forms for update/create, full crud. Also possible to undo deletes.
-Event list which publishes each update/create/delete/undoDelete.
-Animated grid, forms, events.
 
-configuration
--------------
 
-Structure same as the previous configurations.
 
-Added new options to columns in the config object:  
-columns = [{  
-  id : ...,  
-  label : ...,  
-  read : {},  
-  update : {},  
-  create : {}  
-}, {  
-  ...  
-}]  
 
-Columns without read/create/update objects will be filtered out in the grid/updateForm/createForm.
+  
+  
+
+
+
+
