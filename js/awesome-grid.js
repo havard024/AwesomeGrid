@@ -1,562 +1,439 @@
-angular.module('awesomeGrid', ['awesomeGrid.factories', 'awesomeGrid.directives', 'awesomeGrid.controllers', 'awesomeGrid.filters']);
-
-
-angular.module('awesomeGrid.filters', [])
-.filter('crudFilter', function() {
-	return function(input, type) {
-		var ret = [];
-		angular.forEach(input, function(field, key) {
-			if (field[type]) {
-				ret.push(field);
-			}
-		});
-		return ret;
-	}
-	
-});
+angular.module('awesomeGrid', ['awesomeGrid.factories', 'awesomeGrid.directives']);
 
 angular.module('awesomeGrid.factories', [])
-.factory('awesomeGridServerFactory', function() {
+.factory('configFactory', [function() {
 
-}).factory('awesomeGridEventFactory', function($timeout) {
+	var columns, factory, rows;
 
-		var events = [];
-
-		function registerEvent(event) {
-	
-			event.timestamp = Date.now();
-			event.visible = true;
-			event.showDetails = false;
-		
-			function unregisterEvent() {
-					console.log(event, typeof event.showDetails);
-				if (event.showDetails && event.showDetails != 'false') {
-					$timeout(unregisterEvent, 5000);
-				} else {
-					event.visible = false;
-				}
-			}	
-
-			
-			$timeout(unregisterEvent, 8000);
-
-			events.unshift(event);
-		}
-
-		function addSampleEvents() {
-
-			var sampleEvents = [];
-			sampleEvents.push({
-				timestamp : Date.now(),
-				msg : { type : 'success', value : 'Hurray, you did something good! *random sample message*' },
-				data : 'Some details about your good deed.'
-			});
-
-			sampleEvents.push({
-				timestamp : Date.now(),
-				msg : { type : 'error', value : 'Oh noes, something failed :( *random sample message*' },
-				data : 'No connection to the server?'
-			});
-
-			sampleEvents.push({
-				timestamp : Date.now(),
-				msg : { type : 'warning', value : 'You\'re about to do something that you might not want to do. *random sample message*' },	
-				data : 'Something bad might happen if you follow through.'
-			});
-
-			sampleEvents.push({
-				timestamp : Date.now(),
-				msg : { type : 'info', value : 'Information message just for you! *random sample message*' },
-				data : 'I don\'t think this kind of message is needed, too much spam.'
-			})
-
-			function addRandomEvent() {
-				registerEvent(angular.copy(sampleEvents[Math.floor(Math.random() * 4)]));
-				$timeout(addRandomEvent, Math.floor(Math.random() * 15 * 1000) + 3000);
-			}
-
-			$timeout(addRandomEvent, 6000);
-		}
-
-//		addSampleEvents();
-		function registerUpdateEvent(event) {
-			event.msg.value = "Succsessfully updated item!";
-		}
-
-		function registerCreateEvent(event) {
-			event.msg.value = "Successfully created item!"
-		}
-
-		function registerDeleteEvent(event) {
-			event.msg.value = "Successfully removed item!"
-		}
-
-		function registerUndoDeleteEvent(event) {
-			event.msg.value = "Restored removed item!"
-		}
-
-		var factory = {};
-		factory.events = events;
-		factory.registerEvent = function(event) {
-	
-			if (event.type === 'update') {
-				registerUpdateEvent(event);
-			} else if (event.type === 'create') {
-				registerCreateEvent(event);
-			} else if (event.type === 'delete') {
-				registerDeleteEvent(event);
-			} else if (event.type === 'undoDelete') {
-				registerUndoDeleteEvent(event);
-			} else {
-				throw "Unknown event type. Expected update/create/delete, got: " + event.type;
-			}
-
-			registerEvent(event);
-		}
-
-		return factory;
-}).factory('awesomeGridData', function($timeout) {
-
-   var config = {
-	columns : [{
-	    id : "1",
-	    label : 'Label 1',
-  		create : {},
-		read : {}, 
+	// Column configuration
+	columns = [{
+		id : 'column1',
+		label : 'Searchable in update/create',
+		search : true,
+		create : {},
+		read : {},
 		update : {}
 	}, {
-	    id : "2",
-            label : 'Label 2',
-  		create : {},
-		read : {}, 
+		id : 'column2',
+		label : 'Searchable in create',
+		create : {
+			search : true
+		},
+		read : {},
 		update : {}
 	}, {
-	    id : "3",
-            label : 'Label 3',
-  		create : {},
-		read : {}, 
+		id  : 'column3',
+		label : 'Searchable in update',
+		create : {},
+		read : {},
+		update : {
+			search : true
+		}
+	}, {
+		id : 'column4',
+		label : 'Only readable',
+		read : {}
+	}, {
+		id : 'column5',
+		label : 'Only updateable',
 		update : {}
 	}, {
-	    id : "4",
-            label : 'Label 4',
-  		create : {},
-		read : {}, 
-		update : {}
-	}, {
-	    id : "5",
-            label : 'Label 5',
-  		create : {},
-		read : {}, 
-		update : {}
-	}, {
-	    id : "6",
-            label : 'Label 6',
-  		create : {},
-		read : {}, 
-		update : {}
-	}]
-    };
+		id : 'column6',
+		label : 'Only creatable',
+		create : {}
+	}];
 
-	var rows = [];
-	$timeout(function() {    var rowsies = [{
-	"1" : {
-	    value : "Value 1"
-	}, 
-	"2" : {
-	    value : "Value 2"
-	}, 
-	"3" : {
-	    value : "Value 3"
-	}, 
-	"4" : {
-	    value : "Value 4"
-	}, 
-	"5" : {
-	    value : "Value 5"
-	}, 
-	"6" : {
-	    value : "Value 6"
-	}
-    }, {
-	"1" : {
-	    value : "Value 7"
-	}, 
-	"2" : {
-	    value : "Value 8"
-	}, 
-	"3" : {
-	    value : "Value 9"
-	}, 
-	"4" : {
-	    value : "Value 10"
-	}, 
-	"5" : {
-	    value : "Value 11"
-	}, 
-	"6" : {
-	    value : "Value 12"
-	}
-    }, {
-	"1" : {
-	    value : "Value 13"
-	}, 
-	"2" : {
-	    value : "Value 14"
-	}, 
-	"3" : {
-	    value : "Value 15"
-	}, 
-	"4" : {
-	    value : "Value 16"
-	}, 
-	"5" : {
-	    value : "Value 17"
-	}, 
-	"6" : {
-	    value : "Value 18"
-	}
-    }, {
-	"1" : {
-	    value : "Value 19"
-	}, 
-	"2" : {
-	    value : "Value 20"
-	}, 
-	"3" : {
-	    value : "Value 21"
-	}, 
-	"4" : {
-	    value : "Value 22"
-	}, 
-	"5" : {
-	    value : "Value 23"
-	}, 
-	"6" : {
-	    value : "Value 24"
-	}
-    }];
-
-	for (var i = 0; i < rowsies.length; ++i) { 
-		rows.push(rowsies[i]) 
-	}
-}, 2000)
-
-
-	factory = {};
-	factory.config = config;
-	factory.rows = rows;
-
-	return factory;
-}).factory('awesomeGridConfig', ['awesomeGridData', function(data) {
-
-	var factory = {};
-
-	factory.getRows = function() {
-	    return data.rows;
-	}
-
-	factory.getColumns = function() {
-	    return data.config.columns;
-	}
-
-	factory.getValue = function(col, row) {
-	    return row[col.id].value;
-	}
-
-	factory.addRow = function(row) {
-		data.rows.unshift(angular.copy(row));
-	}
-	
-	return factory;
-}]).factory('awesomeGridFormFactory', function(awesomeGridConfig, awesomeGridEventFactory) {
-	
-
-	var editFormVisible, newFormVisible;
-	var activeRow = {
-		value : {},
-		oldValue : {}
+	factory = {
+		columns : columns,
+		data : {
+				//local : rows
+				remote : "data.json"
+		}
 	};
-	
-	editFormVisible = newFormVisible = false;
-
-	var factory = {};
-
-	function openEditForm(row) {
-
-		activeRow.oldValue = row;
-		activeRow.value = angular.copy(row);
-		editFormVisible = true;
-	}
-
-	function openNewForm() {
-		newFormVisible = true;
-	}
-
-	function closeEditForm() {
-		editFormVisible = false;
-	}
-
-	function closeNewForm() {
-		newFormVisible = false;
-	}
-
-	factory.closeEditForm = function() {
-		closeEditForm();
-	}
-
-	factory.closeNewForm = function() {
-		closeNewForm();
-	}
-
-	factory.saveEditForm = function() {
-
-		var newRow, oldRow;
-
-		newRow = angular.copy(activeRow.value);
-		oldRow = angular.copy(activeRow.oldValue);
-
-		awesomeGridEventFactory.registerEvent({ 
-			type : 'update',
-			msg : { 
-				type : 'success'
-				},
-			data : {
-				from : oldRow,
-				to   : newRow
-			}
-		});
-
-		for (var v in activeRow.value) {
-			activeRow.oldValue[v].value = activeRow.value[v].value; 
-			activeRow.value[v].value = undefined;
-		}
-		closeEditForm();
-	}
-
-	factory.saveNewForm = function() {
-
-		console.log(activeRow);
-		awesomeGridEventFactory.registerEvent({ 
-			type : 'create',
-			msg : {
-				type : 'success'
-				},
-			data : {
-				value : angular.copy(activeRow.value)
-			}
-		 });
-
-		awesomeGridConfig.addRow(angular.copy(activeRow.value));
-		for (var v in activeRow.value) {
-			activeRow.value[v].value = undefined;
-		}
-		closeNewForm();
-	}
-	
-	factory.getActiveRow = function() {
-		return activeRow;
-	}
-
-	factory.isVisible = function(type) {
-		if (type === 'new') {
-			return newFormVisible;
-		} else if (type === 'edit') {
-			return editFormVisible;
-		} else {
-			throw "Unknown type. Expected new/edit, got: " + type;
-		}
-	}
-
-	factory.showForm = function(type, row) {
-		if (type === 'new') {
-			openNewForm();
-		} else if (type === 'edit') {
-			openEditForm(row);
-		} else {
-			throw "Unknown type. Expected new/edit, got: " + type;
-		}
-	}
-
-	factory.closeForm = function(type) {
-		if (type === 'new') {
-			closeNewForm();	
-		} else if (type === 'edit') {
-			closeEditForm();
-		} else {
-			throw "Unknown type. Expected new/edit, got: " + type;
-		}
-	}
-
-	factory.getAnimationDelay = function(type) {
-		if (type === 'new' && editFormVisible || type === 'edit' && newFormVisible) {
-			 return "-webkit-animation-delay: 0.8s;" 
-		}
-	}
 
 	return factory;
-});
- 
-angular.module('awesomeGrid.directives', [])
-.directive('awesomeGridEvents', function() {
-		return {
-			restrict: 'C',
-			templateUrl: 'templates/events.html',
-			controller: function($scope, awesomeGridEventFactory) {
-				$scope.getEvents = function() {
-					return awesomeGridEventFactory.events;
-				}	
-			}
+}]).factory('eventFactory', ['$timeout', function($timeout) {
+	
+	var events = [];
+	var removeDelay = 4000;
+	var id = 0;
+
+	function getHeader(type) {
+		if (type === "create") {
+			return "Creating product...";
+		} else if (type === "update") {
+			return "Updating product...";
+		} else if (type === "delete") { 
+			return "Deleting product...";
 		}
-}).directive('awesomeGridNewForm', function(awesomeGridConfig) {
-	return {
-		restrict: 'C',
-		scope : true,
-		templateUrl : 'templates/form-with-templates.html',
-		controller: function($scope) {
-				
-			$scope.title = "New Form";
-			$scope.type = 'create';
-			var type = 'new';
-			$scope.saveForm = function() {
-				$scope.$parent.saveForm(type);
-			}
-			$scope.closeForm = function() {
-				$scope.$parent.closeForm(type);
-			}
-		}
-	};		
-}).directive('awesomeGridEditForm', function(awesomeGridConfig) {
-	return {
-		restrict: 'C',
-		scope : true,
-		templateUrl : 'templates/form-with-templates.html',
-		required : 'ngModel',
-		controller: function($scope) {
-			$scope.title =  'Edit Form';
-			$scope.type = 'update';
-			var type = 'edit';
-
-			$scope.saveForm = function() {
-				$scope.$parent.saveForm(type);
-			}
-			$scope.closeForm = function() {
-				$scope.$parent.closeForm(type);
-			}
-		}
-	};		
-}).directive('awesomeGrid', function(awesomeGridConfig, awesomeGridFormFactory, awesomeGridEventFactory, $timeout) {
-	return {
-		restrict: 'C',
-		scope : false,
-		require : ['^awesomeGridConfig', '^awesomeGridForm', '^awesomeGridFormFactory'],
-		templateUrl : 'templates/table-with-templates.html',
-
-		controller : function($scope) {
-
-			$scope.rows = awesomeGridConfig.getRows();
-			$scope.columns = awesomeGridConfig.getColumns();
-			$scope.getValue = function(col, row) {
-	    			return awesomeGridConfig.getValue(col, row);
-			}
-
-			$scope.activeRow = awesomeGridFormFactory.getActiveRow();
-
-			$scope.showEditForm = function(row) {
-		
-				var closeType = awesomeGridFormFactory.isVisible('new') ? 'new' : (awesomeGridFormFactory.isVisible('edit') ? 'edit' : undefined);		
-		
-				var delay = closeType ? 700 : 0;
-		
-				if (closeType) awesomeGridFormFactory.closeForm(closeType)
-			
-				$timeout(function() { awesomeGridFormFactory.showForm('edit', row); }, delay);
-			}
-
-			$scope.showNewForm = function() {
-				
-				var closeType = awesomeGridFormFactory.isVisible('new') ? 'new' : (awesomeGridFormFactory.isVisible('edit') ? 'edit' : undefined);		
-		
-				var delay = closeType ? 700 : 0;
-
-				if (closeType) awesomeGridFormFactory.closeForm(closeType)
-
-				$timeout(function() { awesomeGridFormFactory.showForm('new'); }, delay);
-			}
-
-			var deleted = [];
-			$scope.deleteRow = function(id) {
-				awesomeGridEventFactory.registerEvent({
-					type : 'delete',
-					msg : { type : 'warning' },
-					data : { value : angular.copy($scope.rows[id]) }
-				});
-				deleted.push($scope.rows[id]);
-				$scope.rows.splice(id, 1);
-			}
-
-			function closeForm(type) {
-				awesomeGridFormFactory.closeForm(type);
-			}
-
-			$scope.hasDeletedRows = function() {
-				return deleted.length > 0;
-			}
-
-			$scope.undoDelete = function() {
-				var row = deleted.pop();
-				awesomeGridEventFactory.registerEvent({
-					type : 'undoDelete', 
-					msg : { type : 'info' },
-					data : { value : angular.copy(row) }
-				})
-				$scope.rows.push(row);
-			}
-		}	
-	}
-});
-
-angular.module('awesomeGrid.controllers', [])
-.controller('awesomeGridFormCtrl', function($scope, awesomeGridFormFactory) {
-
-	function isEditForm(type) {
-		return type === 'edit';
 	}
 
-	function isNewForm(type) {
-		return type === 'new';
+	function Event(conf) {
+		this.id = id++;
+		this.time = Date.now();
+		this.header = conf.status + "!";
+		if (conf.status === 'error') { 
+			this.msgType = 'danger';
+			this.msg = "Failed to " + conf.type + " item.";
+		} else {
+			this.msgType = 'success'
+			this.msg = "Successfully " + conf.type + "d item.";
+		}
+
+	}
+
+	var factory = {};
+	
+	factory.trigger = function(conf) {
+	
+		var event = new Event(conf);
+		events.push(event);
+
+		$timeout(function() {
+			angular.forEach(events, function(field, key) {
+				if (field.id === event.id) {
+					events.splice(key, 1);
+					return;
+				}
+			})
+		}, removeDelay)
 	}	
 
-	$scope.activeRow = awesomeGridFormFactory.getActiveRow();
+	factory.triggerLocalEvent = function(type) {
+		events.push(new Event({
+			type : type,
+			status : 'local',
+			msgType : 'info'
+		}));
+	}
 
-	$scope.closeForm = function(type) {
+	factory.getEvents = function() {
+		return events;
+	}
 
-		if (isNewForm(type)) {
-			awesomeGridFormFactory.closeNewForm(type);
-		} else if (isEditForm(type)) {
-			awesomeGridFormFactory.closeEditForm(type);
+	return factory;
+}]).factory('dataFactory', ['configFactory', 'remoteDataFactory', 'localDataFactory', 'eventFactory', function(conf, remote, local, event) {
+
+	var factory;
+
+	init();
+
+	function isLocalData() {
+		return conf.data.local;
+	}
+
+	function isRemoteData() {
+		return conf.data.remote;
+	}
+
+	function init() {
+		if (isLocalData()) {
+			local.store({
+				value : conf.data.local, 
+				local : true
+			});
+		} else if (isRemoteData()) {
+			getRemote();
 		} else {
-			throw "Unknown type. Expected new/edit, got: " + type;
+			throw "Invalid configuration. No remote or local data source specified."
 		}
 	}
-
-	$scope.formIsVisible = function(type) {
-		return awesomeGridFormFactory.isVisible(type);
+	
+	function getRemote() {
+		var data = remote.get(conf.data.remote);
+		data.remote = true;
+		local.store(data);
 	}
 
-	$scope.getAnimationDelay = function(type) {
-		return awesomeGridFormFactory.getAnimationDelay(type);
+	factory = {};
+
+	factory.getColumns = function() {
+		return conf.columns;
 	}
 
-	$scope.saveForm = function(type) {
+	factory.get = function(refresh) {
 
-		if (isNewForm(type)) {
-			awesomeGridFormFactory.saveNewForm();
-		} else if (isEditForm(type)) {
-			awesomeGridFormFactory.saveEditForm();
-		} else {
-			throw "Unknown type. Expected new/edit, got: " + type;
+		if (refresh) {	
+			getRemote();
+		} 
+
+		return local.get();
+	}
+
+	factory.createItem = function(item) {	
+		
+	//	var evt = event.triggerLocalEvent('create');
+
+		remote.insert(item).then(function() { 
+			local.insert(item);
+		}, function() {
+			//	local.delete(item);
+		});
+	}
+
+	factory.updateItem = function(oldItem, newItem) {
+
+	//	var evt = event.triggerLocalEvent('update');
+		var copy = angular.copy(oldItem);
+	
+		remote.update(copy, newItem).then(function() {
+		
+			for (var i = 0; i < conf.columns.length; ++i) {
+				var id = conf.columns[i].id;
+				oldItem[id].value = newItem[id].value
+			}
+
+		}, function() {
+			/*
+			for (var i = 0; i < conf.columns.length; ++i) {
+				var id = conf.columns[i].id;
+				oldItem[id].value = copy[id].value;
+			}
+			*/
+		});	
+	}	
+
+	factory.deleteItem = function(item) {
+
+	//	var evt = event.triggerLocalEvent('delete');
+
+		remote.delete(item).then(function() {
+			local.delete(item);
+		 }, function() {
+			//	local.insert(item);
+		})
+	}
+
+	return factory;
+}]).factory('remoteDataFactory', ['$http', 'eventFactory', '$timeout', '$q', function($http, event, $timeout, $q) {
+	
+	var factory, data;
+
+	data = {}
+	factory = {};
+
+	factory.get = function(url) {
+		$http.post(url).success(function(ret) {
+			data.value = ret;
+		}).error(function(ret) {console.log('error', ret)});
+
+		return data;
+	}
+
+	function random(start, stop) {
+		return Math.floor(Math.random() * stop * 1000) + start * 1000;
+	}
+
+	function post(evtConfig) {
+		var url = 'data.json';
+	
+		if (random(0,1) % 2 === 0) {
+			url = 'err.json'; 
+		}
+
+		var deferred = $q.defer();
+
+		$timeout(function() {
+			$http.post(url).error(function() {
+				deferred.reject();
+				evtConfig.status = 'error';
+				event.trigger(evtConfig);
+			}).success(function() {
+				deferred.resolve();
+				evtConfig.status = 'success';
+				event.trigger(evtConfig);
+			});
+		}, 300);
+		return deferred.promise;
+	}
+
+
+	factory.insert = function(item, evt) {
+
+		evtConfig = {
+			'status' : 'success',
+			'type' : 'create',
+			data : {
+				item : angular.copy(item)
+			}
+		};
+
+		return post(evtConfig);
+	}
+
+	factory.update = function(oldItem, newItem, evt) {
+
+		evtConfig = {
+			'status' : 'success',
+			'type' : 'update',
+			data : {
+				from : angular.copy(oldItem),
+				to   : angular.copy(newItem)
+			}
+		};
+		
+		return post(evtConfig);
+	}
+
+	factory.delete = function(item, evt) {
+
+		evtConfig = {
+			'status' : 'success',
+			'type' : 'delete',
+			data : {
+				item : angular.copy(item)
+			}
+		};
+
+		return post(evtConfig);
+	}
+
+	return factory;
+}]).factory('localDataFactory', [function() {
+
+	var factory, data;
+	
+	factory = {};
+
+	factory.store = function(d) {
+		data = d;
+	}
+
+	factory.get = function() {
+		return data;
+	}
+
+	factory.insert = function(item) {
+		item.lid = 'make unique lid';
+		data.value.unshift(item);
+	}
+
+	factory.delete = function(item) {
+		console.log('local', 'delete', item);
+		angular.forEach(data.value, function(field, key) {
+			if (field.id === item.id) {
+				data.value.splice(key, 1);
+				return;
+			}
+		});
+	}
+
+	return factory;
+}]);
+
+angular.module('awesomeGrid.directives', [])
+.directive('agAwesomeGrid', ['dataFactory', function(data) {
+	return {
+		restrict : 'C',
+		templateUrl : 'templates/awesome-grid-2/table.html',
+		controller : function($scope) {
+
+			var formIsOpen = false;
+
+			$scope.rows = data.get();
+			$scope.columns = data.getColumns();
+			$scope.emptyRow = {};	
+			$scope.activeRow = {
+				copy : {},
+				curr : {}
+			}	
+	
+			$scope.getLabel = function(col) {
+				return col.label;
+			}	
+
+			$scope.getValue = function(col, row) {
+				return row[col.id].value;	
+			}
+
+			function getRowId(row) {
+				console.log(row.id || row.lid);
+				return row.id || row.lid;
+			}
+
+			$scope.openForm = function(row, type) {
+				$scope.activeRow.copy = angular.copy(row);
+				$scope.activeRow.curr = row;
+				formIsOpen = true;
+				$scope.type = type;
+			}
+
+			$scope.closeForm = function() {
+				formIsOpen = false;
+			}
+
+			$scope.saveForm = function() {
+				console.log('save form', $scope.activeRow)
+				var copy = $scope.activeRow.copy;
+				var curr = $scope.activeRow.curr;
+
+				if (getRowId(copy)) {
+					data.updateItem($scope.activeRow.curr, $scope.activeRow.copy)
+				} else {
+					data.createItem(copy)
+				}
+
+				$scope.closeForm();
+			}
+
+			$scope.showForm = function() {
+				return formIsOpen;
+			}
+
+			$scope.delete = function(row) {
+				data.deleteItem(row);
+			}
+
+			$scope.formColumnFilter = function(val) {
+
+				var text, column;
+
+				text = $scope.formSearchText;
+				column = $scope.formSearchColumn;
+				
+				if (formIsOpen && text !== undefined && column !== undefined && text.length > 0 && column.length > 0) {
+					return val[column].value.indexOf(text) != -1;
+				}				
+			
+				return true;
+			}
+
+			$scope.readFilter = function(val) {
+				return val.read;
+			}
+
+			$scope.crudFilter = function(val) {
+				return val[$scope.type];
+			}
 		}
 	}
-
-
-});
+}]).directive('agForm', function() {
+	return {
+		restrict : 'C',
+		templateUrl : 'templates/awesome-grid-2/form.html',
+		controller : function($scope) {
+			$scope.search = function(col) {
+				if (col.search || col[$scope.type].search) {
+					$scope.formSearchText = $scope.activeRow.copy[col.id].value;
+					$scope.formSearchColumn = col.id;
+				}
+			}
+		}
+	}
+}).directive('agEvents', ['eventFactory', function(event) {
+	return {
+		restrict : 'C',
+		templateUrl : 'templates/awesome-grid-2/events.html',
+		controller : function($scope) {
+			$scope.events = event.getEvents();
+		}
+	}
+}]).directive('agSearch', [function() {
+	return {
+		restrict : 'C',
+		templateUrl : 'templates/awesome-grid-2/search.html',
+		controller : function($scope) {
+			
+		}
+	}
+}]);

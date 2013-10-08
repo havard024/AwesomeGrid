@@ -1,0 +1,31 @@
+<p>Columns: {{columns}}</p>
+<p>Rows: {{rows}}</p>
+<p>ActiveRow: {{activeRow}}</p>
+<div class="well" ng-show="showForm()">
+	<div class="agForm"></div>
+</div>
+
+<a class="btn btn-info" ng-click="openForm(emptyRow, 'create')">Create</a>
+<div class="agSearch"></div>
+<table class="table table-striped table-hover table-bordered table-condensed">
+
+	<tr>
+		<th ng-repeat="col in columns | filter:readFilter" ng-init="emptyRow[col.id] = {}">
+			{{getLabel(col)}}
+		</th>
+	</tr>
+	<tr ng-repeat="row in rows.value | filter:searchText | filter:formColumnFilter">
+		<td ng-repeat="col in columns | filter:readFilter">
+			{{getValue(col, row)}}
+		</td>
+		<td>
+			<a class="btn btn-info" ng-click="openForm(row, 'update')">Update</a>
+			<a class="btn btn-danger" ng-click="delete(row)">Delete</a>
+		</td>
+	</tr>
+	
+</table>
+
+<div class="well">
+	<div class="agEvents"></div>
+</div>

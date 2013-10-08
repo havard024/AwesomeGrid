@@ -1,0 +1,12 @@
+<form class="form-horizontal" novalidate>
+	<div class="control-group" ng-repeat="col in columns | filter:crudFilter">
+		<label class="control-label">{{getLabel(col)}}</label>
+		<div class="controls">
+			<input ng-model="activeRow.copy[col.id].value" ng-change="search(col)" type="text" name="field" required />
+		</div>
+	</div>
+	<div class="form-actions">
+		<button class="btn btn-danger" ng-click="closeForm()">Close</button>
+		<button class="btn btn-success" ng-click="saveForm()">Save</button>
+	</div>
+</form>

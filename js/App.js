@@ -1,1 +1,1 @@
-angular.module('App', ['awesomeGridSimple']);
+angular.module('App', ['awesomeGrid']);
