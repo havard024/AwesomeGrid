@@ -1,5 +1,5 @@
 <form class="form-horizontal" novalidate>
-	<div class="control-group" ng-repeat="col in columns | filter:crudFilter">
+	<div class="control-group" ng-repeat="col in columns | filter:crudFilter" ng-show="'true'" ng-animate="{show : 'animated fadeIn', hide : 'animated fadeOut'}">
 		<label class="control-label">{{getLabel(col)}}</label>
 		<div class="controls">
 			<input ng-model="activeRow.copy[col.id].value" ng-change="search(col)" type="text" name="field" required />

@@ -3,20 +3,20 @@
 <p>Rows: {{rows}}</p>
 <p>ActiveRow: {{activeRow}}</p>
 -->
-<div class="well" ng-show="showForm()">
+<div class="well" ng-show="showForm()" style="display:none;" ng-animate="{show : 'animated fadeIn', hide : 'animated slideOutLeft'}">
 	<div class="agForm"></div>
 </div>
 
-<a class="btn btn-info" ng-click="openForm(emptyRow, 'create')">Create</a>
-<div class="agSearch"></div>
+<a class="btn btn-info" ng-click="openForm(emptyRow, 'create')" ng-show="'true'" ng-animate="{show : 'animated bounceInRight'}">Create</a>
+<div class="agSearch" ng-show="'true'" ng-animate="{show : 'animated bounceInRight'}"></div>
 <table class="table table-striped table-hover table-bordered table-condensed">
 
 	<tr>
-		<th ng-repeat="col in columns | filter:readFilter" ng-init="emptyRow[col.id] = {}">
+		<th ng-repeat="col in columns | filter:readFilter" ng-init="emptyRow[col.id] = {}" ng-animate="{enter : 'animated fadeIn', leave : 'animated fadeOut'}">
 			{{getLabel(col)}}
 		</th>
 	</tr>
-	<tr ng-repeat="row in rows.value | filter:searchText | filter:formColumnFilter">
+	<tr ng-repeat="row in rows.value | filter:searchText | filter:formColumnFilter" ng-animate="{enter : 'animated fadeIn', leave : 'animated lightSpeedOut'}">
 		<td ng-repeat="col in columns | filter:readFilter">
 			{{getValue(col, row)}}
 		</td>

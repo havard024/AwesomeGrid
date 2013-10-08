@@ -2,7 +2,7 @@
 <h2>Events: {{events}}</h2>
 -->
 <div style="position:absolute; right: 0; bottom: 0">
-<div ng-repeat="evt in events" class="alert alert-{{evt.msgType}}">
+<div ng-animate="{leave : 'animated fadeOut', enter : 'animated fadeIn'}" ng-repeat="evt in events" class="alert alert-{{evt.msgType}}">
 	<h4>{{evt.header}}</h4>
 	<small>{{evt.time | date:"hh:mm:ss"}}</small> {{evt.msg}}
 </div>
