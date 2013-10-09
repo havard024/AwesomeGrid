@@ -18,6 +18,7 @@ Future Features
 * Different form fields: select, checkbox.
 * Use a html template to style form fields.
 * Form validation.
+* Local or remote pagiantion.
 
 Checkout the current demo page: http://havard024.github.io/AwesomeGrid
 
