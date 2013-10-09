@@ -10,11 +10,11 @@ Features
 * Choose which columns to display in create, read and update.
 * Mark a column in the create/update as searchable.
 * Full feedback of all crud events on success or failure.
+* Awesome animations for filtering, events and forms.
 
 Future Features
 ---------------
 * Specify urls for delete/create/update to update the database.
-* Awesome animations for filtering, events and forms.
 * Different form fields: select, checkbox.
 * Use a html template to style form fields.
 * Form validation.
