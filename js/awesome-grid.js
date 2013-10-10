@@ -300,6 +300,8 @@ angular.module('awesomeGrid.factories', [])
 				evtConfig.status = 'success';
 //			}
 
+				console.log('post');
+
 			event.trigger(evtConfig);
 		}, 300);
 
