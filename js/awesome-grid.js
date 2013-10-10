@@ -7,114 +7,56 @@ angular.module('awesomeGrid.factories', [])
 
 	// Column configuration
 	columns = [{
-		id : 'column1',
-		label : 'Searchable in update/create',
+		id : 'reference',
+		label : 'Reference Number',
 		search : true,
+		create : {},
+		read : {},
+	}, {
+		id : 'first_name',
+		label : 'First name',
 		create : {},
 		read : {},
 		update : {}
 	}, {
-		id : 'column2',
-		label : 'Searchable in create',
+		id : 'last_name',
+		label : "Last name",
 		create : {
 			search : true
 		},
 		read : {},
 		update : {}
 	}, {
-		id  : 'column3',
-		label : 'Searchable in update',
+		id : 'date',
+		label : 'Date Hired',
 		create : {},
 		read : {},
-		update : {
-			search : true
-		}
-	}, {
-		id : 'column4',
-		label : 'Only readable',
-		read : {}
-	}, {
-		id : 'column5',
-		label : 'Only updateable',
 		update : {}
 	}, {
-		id : 'column6',
-		label : 'Only creatable',
-		create : {}
+		id  : 'email',
+		label : 'Email address',
+		search : true,
+		create : {},
+		read : {},
+		update : {}
 	}];
 
-	var rows = [{
-		"id" : {
-			"value" : "row1"
-		},
-		"column1" : {
-			"value" : "value 1"
-		},
-		"column2" : {
-			"value" : "value 2"
-		},
-		"column3" : {
-			"value" : "value 3"
-		},
-		"column4" : {
-			"value" : "Only readable 1"
-		},
-		"column5" : {
-			"value" : "Only updateable 1"
-		}, 
-		"column6" : {
-			"value" : "Only creatable 1"
-		}
-	}, {
-		"id" : {
-			"value" : "row1"
-		},
-		"column1" : {
-			"value" : "value 4"
-		},
-		"column2" : {
-			"value" : "value 5"
-		},
-		"column3" : {
-			"value" : "value 6"
-		},
-		"column4" : {
-			"value" : "Only readable 2"
-		},
-		"column5" : {
-			"value" : "Only updateable 2"
-		}, 
-		"column6" : {
-			"value" : "Only creatable 2"
-		}
-	}, {
-		"id" : {
-			"value" : "row1"
-		},
-		"column1" : {
-			"value" : "value 7"
-		},
-		"column2" : {
-			"value" : "value 8"
-		},
-		"column3" : {
-			"value" : "value 9"
-		},
-		"column4" : {
-			"value" : "Only readable 3"
-		},
-		"column5" : {
-			"value" : "Only updateable 3"
-		}, 
-		"column6" : {
-			"value" : "Only creatable 3"
-		}
-	}] 
+	jQuery.mockJSON(/mockdata\.json/, {
+ 		"rows|25-50" : [{ 
+			"id|8-8"   : "@LETTER_UPPER@NUMBER@LETTER_LOWER", 
+      			"date" : "@DATE_YYYY/@DATE_MM/@DATE_DD",
+      			"first_name" : "@MALE_FIRST_NAME",
+			"last_name" : "@LAST_NAME",
+      			"email" : "@EMAIL",
+			"reference|8-8" : "@NUMBER", 
+      		}]
+   	});
+
 	factory = {
 		columns : columns,
 		data : {
-				local : rows
-				//remote : "data.json"
+			//	local : rows
+				remote : "mockdata/mockdata.json"
 		}
 	};
 
@@ -229,46 +171,69 @@ angular.module('awesomeGrid.factories', [])
 
 	factory.createItem = function(item) {	
 		
-	//	var evt = event.triggerLocalEvent('create');
-
+		success();
+	
 		remote.insert(item).then(function() { 
-			local.insert(item);
+			// Success
 		}, function() {
-			//	local.delete(item);
+			rollback();
 		});
+	
+		function success() {
+			local.insert(item);
+		}
+
+		function rollback() {
+			local.delete(item);
+		}
 	}
 
 	factory.updateItem = function(oldItem, newItem) {
 
-	//	var evt = event.triggerLocalEvent('update');
 		var copy = angular.copy(oldItem);
-	
+
+		success();
+
 		remote.update(copy, newItem).then(function() {
 		
+		}, function() {
+			rollback();
+		});	
+		
+		function success() {
 			for (var i = 0; i < conf.columns.length; ++i) {
 				var id = conf.columns[i].id;
 				oldItem[id].value = newItem[id].value
 			}
+		}
 
-		}, function() {
-			/*
+		function rollback() {
 			for (var i = 0; i < conf.columns.length; ++i) {
 				var id = conf.columns[i].id;
 				oldItem[id].value = copy[id].value;
 			}
-			*/
-		});	
+		}
 	}	
 
 	factory.deleteItem = function(item) {
 
-	//	var evt = event.triggerLocalEvent('delete');
+		var key; 
+
+		success();
 
 		remote.delete(item).then(function() {
-			local.delete(item);
-		 }, function() {
-			//	local.insert(item);
-		})
+		 
+		}, function() {
+			rollback();
+		});
+		
+		function success() {
+			key = local.delete(item);
+		}
+
+		function rollback() {
+			local.insert(item, key);
+		}
 	}
 
 	return factory;
@@ -279,10 +244,36 @@ angular.module('awesomeGrid.factories', [])
 	data = {}
 	factory = {};
 
+	function valuefy(rows) {
+		var i;
+		for (i = 0; i < rows.length; ++i) {
+			var row = rows[i];
+			angular.forEach(row, function(field, key) {
+				row[key] = { value : field };
+			});
+		}
+	}
+
 	factory.get = function(url) {
-		$http.post(url).success(function(ret) {
-			data.value = ret;
-		}).error(function(ret) {console.log('error', ret)});
+
+		if (url.indexOf('mockdata') != -1) { 
+			var deferred = $q.defer();
+
+			jQuery.getJSON(url, function(ret) {
+				deferred.resolve(ret);
+			})
+		
+			deferred.promise.then(function(ret) {
+				valuefy(ret.rows);
+				data.value = ret.rows;
+			}, function(ret) {
+				console.log('error', ret)
+			});
+		} else {
+       		        $http.post(url).success(function(ret) {
+                	       data.value = ret;
+               		}).error(function(ret) {console.log('error', ret)});
+		}
 
 		return data;
 	}
@@ -372,8 +363,9 @@ angular.module('awesomeGrid.factories', [])
 	return factory;
 }]).factory('localDataFactory', [function() {
 
-	var factory, data;
+	var factory, data, id;
 	
+	id = 0;
 	factory = {};
 
 	factory.store = function(d) {
@@ -384,19 +376,29 @@ angular.module('awesomeGrid.factories', [])
 		return data;
 	}
 
-	factory.insert = function(item) {
-		item.lid = 'make unique lid';
-		data.value.unshift(item);
+	factory.insert = function(item, key) {
+		item.lid = id++;
+
+		if (key) {
+			data.value.splice(key, 0, item);
+		} else {		
+			data.value.unshift(item);
+		}
 	}
 
 	factory.delete = function(item) {
-		console.log('local', 'delete', item);
+		
+		var ret;
+
 		angular.forEach(data.value, function(field, key) {
 			if (field.id === item.id) {
 				data.value.splice(key, 1);
+				ret = key;
 				return;
 			}
 		});
+
+		return ret;
 	}
 
 	return factory;
@@ -475,7 +477,7 @@ angular.module('awesomeGrid.directives', [])
 				text = $scope.formSearchText;
 				column = $scope.formSearchColumn;
 				
-				if (formIsOpen && text !== undefined && column !== undefined && text.length > 0 && column.length > 0) {
+				if (formIsOpen && text !== undefined && column !== undefined && text.length > 0 && column.length > 0 && val[column].value) {
 					return val[column].value.indexOf(text) != -1;
 				}				
 			
